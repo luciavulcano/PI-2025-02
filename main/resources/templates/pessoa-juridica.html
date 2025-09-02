@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Pessoa Jurídica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Cabeçalho -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1 class="text-center text-primary">Cadastro de Pessoa Jurídica</h1>
+                <div class="text-center mt-3">
+                    <a href="/" class="btn btn-secondary">Voltar ao Menu Principal</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Cadastrar Nova Pessoa Jurídica</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="pessoaJuridicaForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="razaoSocial" class="form-label">Razão Social *</label>
+                                    <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nomeFantasia" class="form-label">Nome Fantasia</label>
+                                    <input type="text" class="form-control" id="nomeFantasia" name="nomeFantasia">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cnpj" class="form-label">CNPJ *</label>
+                                    <input type="text" class="form-control" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="inscricaoEstadual" class="form-label">Inscrição Estadual</label>
+                                    <input type="text" class="form-control" id="inscricaoEstadual" name="inscricaoEstadual">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">E-mail</label>
+                                    <input type="email" class="form-control" id="email" name="email">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefone" class="form-label">Telefone</label>
+                                    <input type="text" class="form-control" id="telefone" name="telefone" placeholder="(00) 0000-0000">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="endereco" class="form-label">Endereço Completo</label>
+                                <textarea class="form-control" id="endereco" name="endereco" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary me-md-2" onclick="limparFormulario()">Limpar</button>
+                                <button type="submit" class="btn btn-primary">Cadastrar Pessoa Jurídica</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Pessoas Jurídicas -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Lista de Pessoas Jurídicas Cadastradas</h5>
+                        <button class="btn btn-info btn-sm" onclick="carregarPessoasJuridicas()">Atualizar Lista</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Razão Social</th>
+                                        <th>Nome Fantasia</th>
+                                        <th>CNPJ</th>
+                                        <th>Inscrição Estadual</th>
+                                        <th>E-mail</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaPessoasJuridicas">
+                                    <!-- Os dados serão carregados via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para edição -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Pessoa Jurídica</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId" name="id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editRazaoSocial" class="form-label">Razão Social *</label>
+                                <input type="text" class="form-control" id="editRazaoSocial" name="razaoSocial" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editNomeFantasia" class="form-label">Nome Fantasia</label>
+                                <input type="text" class="form-control" id="editNomeFantasia" name="nomeFantasia">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editCnpj" class="form-label">CNPJ *</label>
+                                <input type="text" class="form-control" id="editCnpj" name="cnpj" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editInscricaoEstadual" class="form-label">Inscrição Estadual</label>
+                                <input type="text" class="form-control" id="editInscricaoEstadual" name="inscricaoEstadual">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editEmail" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="editEmail" name="email">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editTelefone" class="form-label">Telefone</label>
+                                <input type="text" class="form-control" id="editTelefone" name="telefone">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEndereco" class="form-label">Endereço Completo</label>
+                            <textarea class="form-control" id="editEndereco" name="endereco" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="salvarEdicao()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Carregar pessoas jurídicas ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarPessoasJuridicas();
+        });
+
+        // Função para cadastrar pessoa jurídica
+        document.getElementById('pessoaJuridicaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const pessoaJuridica = Object.fromEntries(formData.entries());
+            
+            fetch('/api/pessoa-juridica', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pessoaJuridica)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Pessoa Jurídica cadastrada com sucesso!');
+                limparFormulario();
+                carregarPessoasJuridicas();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar pessoa jurídica');
+            });
+        });
+
+        // Função para carregar lista de pessoas jurídicas
+        function carregarPessoasJuridicas() {
+            fetch('/api/pessoa-juridica')
+            .then(response => response.json())
+            .then(pessoasJuridicas => {
+                const tbody = document.getElementById('listaPessoasJuridicas');
+                tbody.innerHTML = '';
+                
+                pessoasJuridicas.forEach(pessoa => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${pessoa.id || '-'}</td>
+                        <td>${pessoa.razaoSocial || '-'}</td>
+                        <td>${pessoa.nomeFantasia || '-'}</td>
+                        <td>${pessoa.cnpj || '-'}</td>
+                        <td>${pessoa.inscricaoEstadual || '-'}</td>
+                        <td>${pessoa.email || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="editarPessoaJuridica(${pessoa.id})">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="excluirPessoaJuridica(${pessoa.id})">Excluir</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar pessoas jurídicas:', error);
+            });
+        }
+
+        // Função para limpar formulário
+        function limparFormulario() {
+            document.getElementById('pessoaJuridicaForm').reset();
+        }
+
+        // Função para editar pessoa jurídica
+        function editarPessoaJuridica(id) {
+            fetch(`/api/pessoa-juridica/${id}`)
+            .then(response => response.json())
+            .then(pessoa => {
+                document.getElementById('editId').value = pessoa.id;
+                document.getElementById('editRazaoSocial').value = pessoa.razaoSocial || '';
+                document.getElementById('editNomeFantasia').value = pessoa.nomeFantasia || '';
+                document.getElementById('editCnpj').value = pessoa.cnpj || '';
+                document.getElementById('editInscricaoEstadual').value = pessoa.inscricaoEstadual || '';
+                document.getElementById('editEmail').value = pessoa.email || '';
+                document.getElementById('editTelefone').value = pessoa.telefone || '';
+                document.getElementById('editEndereco').value = pessoa.endereco || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Erro ao carregar pessoa jurídica:', error);
+                alert('Erro ao carregar dados da pessoa jurídica');
+            });
+        }
+
+        // Função para salvar edição
+        function salvarEdicao() {
+            const form = document.getElementById('editForm');
+            const formData = new FormData(form);
+            const pessoa = Object.fromEntries(formData.entries());
+            const id = document.getElementById('editId').value;
+            
+            fetch(`/api/pessoa-juridica/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pessoa)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Pessoa Jurídica atualizada com sucesso!');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                modal.hide();
+                carregarPessoasJuridicas();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar pessoa jurídica');
+            });
+        }
+
+        // Função para excluir pessoa jurídica
+        function excluirPessoaJuridica(id) {
+            if (confirm('Tem certeza que deseja excluir esta pessoa jurídica?')) {
+                fetch(`/api/pessoa-juridica/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Pessoa Jurídica excluída com sucesso!');
+                        carregarPessoasJuridicas();
+                    } else {
+                        alert('Erro ao excluir pessoa jurídica');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao excluir pessoa jurídica');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Fornecedores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Cabeçalho -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h1 class="text-center text-warning">Cadastro de Fornecedores</h1>
+                <div class="text-center mt-3">
+                    <a href="/" class="btn btn-secondary">Voltar ao Menu Principal</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Cadastrar Novo Fornecedor</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="fornecedorForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="razaoSocial" class="form-label">Razão Social *</label>
+                                    <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nomeFantasia" class="form-label">Nome Fantasia</label>
+                                    <input type="text" class="form-control" id="nomeFantasia" name="nomeFantasia">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cnpj" class="form-label">CNPJ *</label>
+                                    <input type="text" class="form-control" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipoServico" class="form-label">Tipo de Serviço/Produto</label>
+                                    <input type="text" class="form-control" id="tipoServico" name="tipoServico" placeholder="Ex: Material de escritório, Limpeza...">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">E-mail</label>
+                                    <input type="email" class="form-control" id="email" name="email">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefone" class="form-label">Telefone</label>
+                                    <input type="text" class="form-control" id="telefone" name="telefone" placeholder="(00) 0000-0000">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="pessoaContato" class="form-label">Pessoa de Contato</label>
+                                    <input type="text" class="form-control" id="pessoaContato" name="pessoaContato" placeholder="Nome do responsável">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="endereco" class="form-label">Endereço Completo</label>
+                                <textarea class="form-control" id="endereco" name="endereco" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary me-md-2" onclick="limparFormulario()">Limpar</button>
+                                <button type="submit" class="btn btn-warning">Cadastrar Fornecedor</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Fornecedores -->
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Lista de Fornecedores Cadastrados</h5>
+                        <button class="btn btn-info btn-sm" onclick="carregarFornecedores()">Atualizar Lista</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Razão Social</th>
+                                        <th>Nome Fantasia</th>
+                                        <th>CNPJ</th>
+                                        <th>Tipo Serviço</th>
+                                        <th>Pessoa Contato</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaFornecedores">
+                                    <!-- Os dados serão carregados via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para edição -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Fornecedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId" name="id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editRazaoSocial" class="form-label">Razão Social *</label>
+                                <input type="text" class="form-control" id="editRazaoSocial" name="razaoSocial" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editNomeFantasia" class="form-label">Nome Fantasia</label>
+                                <input type="text" class="form-control" id="editNomeFantasia" name="nomeFantasia">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editCnpj" class="form-label">CNPJ *</label>
+                                <input type="text" class="form-control" id="editCnpj" name="cnpj" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editTipoServico" class="form-label">Tipo de Serviço/Produto</label>
+                                <input type="text" class="form-control" id="editTipoServico" name="tipoServico">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editEmail" class="form-label">E-mail</label>
+                                <input type="email" class="form-control" id="editEmail" name="email">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editTelefone" class="form-label">Telefone</label>
+                                <input type="text" class="form-control" id="editTelefone" name="telefone">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editPessoaContato" class="form-label">Pessoa de Contato</label>
+                                <input type="text" class="form-control" id="editPessoaContato" name="pessoaContato">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEndereco" class="form-label">Endereço Completo</label>
+                            <textarea class="form-control" id="editEndereco" name="endereco" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-warning" onclick="salvarEdicao()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Carregar fornecedores ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarFornecedores();
+        });
+
+        // Função para cadastrar fornecedor
+        document.getElementById('fornecedorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const fornecedor = Object.fromEntries(formData.entries());
+            
+            fetch('/api/fornecedor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(fornecedor)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Fornecedor cadastrado com sucesso!');
+                limparFormulario();
+                carregarFornecedores();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar fornecedor');
+            });
+        });
+
+        // Função para carregar lista de fornecedores
+        function carregarFornecedores() {
+            fetch('/api/fornecedor')
+            .then(response => response.json())
+            .then(fornecedores => {
+                const tbody = document.getElementById('listaFornecedores');
+                tbody.innerHTML = '';
+                
+                fornecedores.forEach(fornecedor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${fornecedor.id || '-'}</td>
+                        <td>${fornecedor.razaoSocial || '-'}</td>
+                        <td>${fornecedor.nomeFantasia || '-'}</td>
+                        <td>${fornecedor.cnpj || '-'}</td>
+                        <td>${fornecedor.tipoServico || '-'}</td>
+                        <td>${fornecedor.pessoaContato || '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="editarFornecedor(${fornecedor.id})">Editar</button>
+                            <button class="btn btn-sm btn-danger" onclick="excluirFornecedor(${fornecedor.id})">Excluir</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar fornecedores:', error);
+            });
+        }
+
+        // Função para limpar formulário
+        function limparFormulario() {
+            document.getElementById('fornecedorForm').reset();
+        }
+
+        // Função para editar fornecedor
+        function editarFornecedor(id) {
+            fetch(`/api/fornecedor/${id}`)
+            .then(response => response.json())
+            .then(fornecedor => {
+                document.getElementById('editId').value = fornecedor.id;
+                document.getElementById('editRazaoSocial').value = fornecedor.razaoSocial || '';
+                document.getElementById('editNomeFantasia').value = fornecedor.nomeFantasia || '';
+                document.getElementById('editCnpj').value = fornecedor.cnpj || '';
+                document.getElementById('editTipoServico').value = fornecedor.tipoServico || '';
+                document.getElementById('editEmail').value = fornecedor.email || '';
+                document.getElementById('editTelefone').value = fornecedor.telefone || '';
+                document.getElementById('editPessoaContato').value = fornecedor.pessoaContato || '';
+                document.getElementById('editEndereco').value = fornecedor.endereco || '';
+                
+                const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Erro ao carregar fornecedor:', error);
+                alert('Erro ao carregar dados do fornecedor');
+            });
+        }
+
+        // Função para salvar edição
+        function salvarEdicao() {
+            const form = document.getElementById('editForm');
+            const formData = new FormData(form);
+            const fornecedor = Object.fromEntries(formData.entries());
+            const id = document.getElementById('editId').value;
+            
+            fetch(`/api/fornecedor/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(fornecedor)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Fornecedor atualizado com sucesso!');
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                modal.hide();
+                carregarFornecedores();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar fornecedor');
+            });
+        }
+
+        // Função para excluir fornecedor
+        function excluirFornecedor(id) {
+            if (confirm('Tem certeza que deseja excluir este fornecedor?')) {
+                fetch(`/api/fornecedor/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Fornecedor excluído com sucesso!');
+                        carregarFornecedores();
+                    } else {
+                        alert('Erro ao excluir fornecedor');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao excluir fornecedor');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
