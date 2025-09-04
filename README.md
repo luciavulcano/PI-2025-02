@@ -17,6 +17,9 @@ Este é um **sistema de gestão integrado** que oferece controle completo de dif
 ### 👥 **Módulo de Pessoas**
 - **Pessoas Físicas**: Controle básico de indivíduos com documentação completa
 
+## 🎨 Design
+📐 **Protótipo Figma**: [Ver Design do Sistema](https://www.figma.com/design/IyYo31jcBSK3ZFTmIvJpTW/PI---2025-02?node-id=0-1&t=sOVtJrvTUEzkF0ff-1)
+
 ## 🗃️ Modelos de Dados
 
 ### 📚 **Aluno**
